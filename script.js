@@ -71,7 +71,10 @@ var view = {
   },
 
   puppyListListener: function() {
-    $("#puppy-list").on("click", "li", function(e) { API.adoptPuppy($(e.target).data("id")); });
+    $("#puppy-list").on("click", "li", function(e) { 
+      e.preventDefault();
+      API.adoptPuppy($(e.target).data("id")); 
+    });
   },
 
   getPuppyName: function() {
@@ -139,7 +142,7 @@ var API = {
       dataType: "json",
       data: JSON.stringify({name: name, breed_id: breedID}),
       success: function() { alert("Thanks for your puppy submission!"); API.getPuppyList(); },
-      error: function() { alert("Oops something went wrong!")}
+      error: function() { alert("Oops something went wrong!"); }
 
     };
 
