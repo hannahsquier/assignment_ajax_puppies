@@ -2,9 +2,33 @@
 <html>
 <head>
   <title>Puppies</title>
+  <script src="https://code.jquery.com/jquery-2.2.4.js"
+  integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI="
+  crossorigin="anonymous"></script>
+
   <script type="text/javascript" src="script.js"></script>
 </head>
 <body>
+  <h1>The AJAX Puppy Shelter</h1>
 
+  <form>
+    Puppy Name:
+    <input type="text" name="name" value="" id="puppy-name">
+    <select>
+      <option>Golden Retriever</option>
+      <option>Cairn Terrier</option>
+      <option>Cockapoo</option>
+      <option>German Shepard</option>
+
+    </select>
+    <input type="submit" id="submit-button">
+  </form>
+
+  <h3>Other Puppies: </h3>
+  <a href="">Refresh Puppy List</a>
+  <ul id="puppy-list">
+
+
+  </ul>
 </body>
 </html>
