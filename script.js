@@ -54,7 +54,6 @@ var controller = {
     if(puppyName) {
       API.sendPuppy(puppyName, breedID);
       view.clearInput();
-     // model.addPuppyToList(puppyName, puppyBreed);
     }
   }
 };
@@ -71,9 +70,9 @@ var view = {
   },
 
   puppyListListener: function() {
-    $("#puppy-list").on("click", "li", function(e) { 
+    $("#puppy-list").on("click", "button", function(e) {
       e.preventDefault();
-      API.adoptPuppy($(e.target).data("id")); 
+      API.adoptPuppy($(e.target).data("id"));
     });
   },
 
@@ -90,7 +89,9 @@ var view = {
   },
 
   render: function(puppyList, breedList) {
+
     $select = $("select");
+    $select.empty();
     for(var b in breedList) {
       $option = $("<option>");
       $option.text(breedList[b].name)
@@ -105,7 +106,7 @@ var view = {
     for (var puppy in puppyList) {
       var creationDate = new Date(puppyList[puppy].created_at);
       $newli = $('<li></li>')
-        .text(puppyList[puppy].name + " (" + puppyList[puppy].breed.name + "), created " + ((now - creationDate) / 1000 / 60)  + " minutes ago.")
+        .text(puppyList[puppy].name + " (" + puppyList[puppy].breed.name + "), created " + (Math.round((now - creationDate) / 1000 / 60) ) + " minutes ago.")
         .append( $('<button>Adopt</button>').attr('data-id', puppyList[puppy].id) );
       $list.append( $newli );
     }
@@ -148,7 +149,6 @@ var API = {
 
     $.ajax(options);
 
-    //var puppyPromise =
   },
 
   adoptPuppy: function(puppyID) {
