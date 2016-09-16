@@ -11,6 +11,12 @@ var model = {
   addPuppyToList: function(puppyName, puppyBreed) {
 
     model.puppies.push(new Puppy(puppyName, puppyBreed));
+  },
+
+  createPuppyList: function(response) {
+    for(puppy in response) {
+      model.addPuppyToList(response[puppy].name, response[puppy].breed)
+    }
   }
 };
 
@@ -54,10 +60,18 @@ var view = {
 
 var API = {
   getPuppyList: function() {
-    
+    var puppyPromise =  $.ajax({ url: "https://ajax-puppies.herokuapp.com/puppies.json",
+                                success: function(response) { model.createPuppyList(response) } } )
+
+   return puppyPromise
   }
+
+
 };
 
 $(document).ready(function() {
   controller.init();
+
+  console.log(API.getPuppyList())
+  console.log(model.puppies)
 })
