@@ -1,12 +1,13 @@
-function Puppy(name, breed, created_at) {
+function Puppy(name, breed, created_at, id) {
   this.name = name;
   this.breed = breed;
   this.created_at = created_at;
+  this.id = id;
 }
 
 function Breed(name, id){
-  this.name = name
-  this.id = id
+  this.name = name;
+  this.id = id;
 }
 
 var model = {
@@ -15,14 +16,14 @@ var model = {
     this.breeds = [];
   },
 
-  addPuppyToList: function(puppyName, puppyBreed, created_at) {
-    model.puppies.push(new Puppy(puppyName, puppyBreed, created_at));
+  addPuppyToList: function(puppyName, puppyBreed, created_at, id) {
+    model.puppies.push(new Puppy(puppyName, puppyBreed, created_at, id));
   },
 
   createPuppyList: function(response) {
     model.puppies = [];
     for(var puppy in response) {
-      model.addPuppyToList(response[puppy].name, response[puppy].breed, response[puppy].created_at);
+      model.addPuppyToList(response[puppy].name, response[puppy].breed, response[puppy].created_at, response[puppy].id);
     }
   },
 
@@ -40,6 +41,7 @@ var controller = {
     API.getPuppyList();
     view.submitButtonListener();
     view.refreshListener();
+    view.puppyListListener();
     model.init();
   },
 
@@ -50,7 +52,8 @@ var controller = {
     var breedID = view.getPuppyBreedID();
 
     if(puppyName) {
-      API.sendPuppy(puppyName, breedID)
+      API.sendPuppy(puppyName, breedID);
+      view.clearInput();
      // model.addPuppyToList(puppyName, puppyBreed);
     }
   }
@@ -60,11 +63,15 @@ var view = {
 
   submitButtonListener: function() {
 
-    $("#submit-button").on("click", controller.submitButtonHandler)
+    $("#submit-button").on("click", controller.submitButtonHandler);
   },
 
   refreshListener: function() {
-    $("#refresh").on("click", API.getPuppyList)
+    $("#refresh").on("click", API.getPuppyList);
+  },
+
+  puppyListListener: function() {
+    $("#puppy-list").on("click", "li", function(e) { API.adoptPuppy($(e.target).data("id")); });
   },
 
   getPuppyName: function() {
@@ -75,22 +82,28 @@ var view = {
     return $("select").val();
   },
 
+  clearInput: function() {
+    $('#puppy-name').val("");
+  },
+
   render: function(puppyList, breedList) {
-    $select = $("select")
-    for(b in breedList) {
-      $option = $("<option>")
+    $select = $("select");
+    for(var b in breedList) {
+      $option = $("<option>");
       $option.text(breedList[b].name)
-            .val(breedList[b].id)
-      $select.append($option)
+            .val(breedList[b].id);
+      $select.append($option);
     }
 
     $list = $('#puppy-list');
-    var now = new Date();
+    $list.empty();
 
+    var now = new Date();
     for (var puppy in puppyList) {
       var creationDate = new Date(puppyList[puppy].created_at);
       $newli = $('<li></li>')
-        .text(puppyList[puppy].name + " (" + puppyList[puppy].breed.name + "), created " + ((now - creationDate) / 1000 / 60)  + " minutes ago.");
+        .text(puppyList[puppy].name + " (" + puppyList[puppy].breed.name + "), created " + ((now - creationDate) / 1000 / 60)  + " minutes ago.")
+        .append( $('<button>Adopt</button>').attr('data-id', puppyList[puppy].id) );
       $list.append( $newli );
     }
   }
@@ -125,14 +138,26 @@ var API = {
       contentType: 'application/json',
       dataType: "json",
       data: JSON.stringify({name: name, breed_id: breedID}),
-      success: function() { alert("Thanks for your puppy submission!")},
+      success: function() { alert("Thanks for your puppy submission!"); API.getPuppyList(); },
       error: function() { alert("Oops something went wrong!")}
 
-    }
+    };
 
-    $.ajax(options)
+    $.ajax(options);
 
     //var puppyPromise =
+  },
+
+  adoptPuppy: function(puppyID) {
+    options = {
+      url: 'https://ajax-puppies.herokuapp.com/puppies/' + puppyID + '.json',
+      method: 'DELETE',
+      success: function() { alert("OMG THANK YOU!"); API.getPuppyList(); },
+      error: function() { alert("Oops something went wrong! The puppy is crying");}
+
+    };
+
+    $.ajax(options);
   }
 
 
@@ -140,7 +165,4 @@ var API = {
 
 $(document).ready(function() {
   controller.init();
-
-  console.log(API.getPuppyList())
-  console.log(model.puppies)
-})
+});
