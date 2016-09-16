@@ -1,6 +1,7 @@
-function Puppy(name, breed) {
+function Puppy(name, breed, created_at) {
   this.name = name;
   this.breed = breed;
+  this.created_at = created_at;
 }
 
 var model = {
@@ -8,14 +9,13 @@ var model = {
     this.puppies = [];
   },
 
-  addPuppyToList: function(puppyName, puppyBreed) {
-
-    model.puppies.push(new Puppy(puppyName, puppyBreed));
+  addPuppyToList: function(puppyName, puppyBreed, created_at) {
+    model.puppies.push(new Puppy(puppyName, puppyBreed, created_at));
   },
 
   createPuppyList: function(response) {
-    for(puppy in response) {
-      model.addPuppyToList(response[puppy].name, response[puppy].breed)
+    for(var puppy in response) {
+      model.addPuppyToList(response[puppy].name, response[puppy].breed.name, response[puppy].created_at);
     }
   }
 };
@@ -53,18 +53,44 @@ var view = {
     return $("select").val();
   },
 
-  render: function() {
+  render: function(puppyList) {
+    $list = $('#puppy-list');
+    var now = new Date();
 
+    for (var puppy in puppyList) {
+      var creationDate = new Date(puppyList[puppy].created_at);
+      $newli = $('<li></li>')
+        .text(puppyList[puppy].name + " (" + puppyList[puppy].breed + "), created " + ((now - creationDate) / 1000 / 60)  + " minutes ago.");
+      $list.append( $newli );
+    }
   }
 };
 
 var API = {
   getPuppyList: function() {
     var puppyPromise =  $.ajax({ url: "https://ajax-puppies.herokuapp.com/puppies.json",
-                                success: function(response) { model.createPuppyList(response) } } )
+                                success: function(response) { 
+                                  model.createPuppyList(response); 
+                                  view.render(model.puppies);
+                                } 
+                              });
 
-   return puppyPromise
+    return puppyPromise;
   }
+
+  sendPuppy: function(puppy) {
+    
+    options = {
+      url: 'https://ajax-puppies.herokuapp.com/puppies.json',
+      method: 'POST',
+      contentType: "application/x-www-form-urlencoded",
+      dataType: "json",
+      data: JSON.stringify(puppy);
+
+    }
+
+    var puppyPromise = 
+  };
 
 
 };
