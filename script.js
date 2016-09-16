@@ -1,32 +1,33 @@
 function Puppy(name, breed) {
-  this.name = name
-  this.breed = breed
+  this.name = name;
+  this.breed = breed;
 }
 
 var model = {
   init: function() {
-    var puppies = []
+    this.puppies = [];
   },
 
-  addPuppyToList: function() {
-    model.puppies.push(new Puppy())
+  addPuppyToList: function(puppyName, puppyBreed) {
+
+    model.puppies.push(new Puppy(puppyName, puppyBreed));
   }
 };
 
 var controller = {
   init: function() {
-    view.submitButtonListener()
+    view.submitButtonListener();
+    model.init();
   },
 
   submitButtonHandler: function(e) {
-    console.log("asdf")
     e.preventDefault();
 
     var puppyName = view.getPuppyName();
     var puppyBreed = view.getPuppyBreed();
 
     if(puppyName) {
-      model.addPuppyToList(puppyName, puppyBreed)
+      model.addPuppyToList(puppyName, puppyBreed);
     }
   }
 };
@@ -39,11 +40,21 @@ var view = {
   },
 
   getPuppyName: function() {
-    return $("#puppy-name").val()
+    return $("#puppy-name").val();
   },
 
   getPuppyBreed: function() {
-    return $("select").val()
+    return $("select").val();
+  },
+
+  render: function() {
+
+  }
+};
+
+var API = {
+  getPuppyList: function() {
+    
   }
 };
 
